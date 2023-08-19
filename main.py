@@ -1,13 +1,15 @@
 import json
-
 from pydantic import BaseModel, Field
 
 
 class Guide(BaseModel):
-    FIO: str
-    name_organization: str = Field(strict=True)
-    phone: int
-    phone_mob: int
+    FIO: str = None
+    name_organization: str = None
+    phone: int = None
+    phone_mob: int = None
+    organization: str= None
+    name: str= None
+
 
     @classmethod
     def start(cls):
@@ -21,8 +23,8 @@ class Guide(BaseModel):
         if first_request == 'записи':
             cls.records()
 
-    @classmethod
-    def add(cls):
+    @staticmethod
+    def add():
         add_data = Guide(
             # Запрашиваем данные для записи в json
             FIO=input('Введите ФИО:\n'),
@@ -45,8 +47,8 @@ class Guide(BaseModel):
                 json.dump(data, outfile, ensure_ascii=False, indent=4)
             print("Вы добавили новую запись в справочник!")
 
-    @classmethod
-    def edit(cls):
+    @staticmethod
+    def edit():
         with open('data.json', 'r') as json_file:
             data = json.load(json_file)
             # запрашивем фамилию по которой будем искать
@@ -66,20 +68,23 @@ class Guide(BaseModel):
 
     @staticmethod
     def search():
-        name = str(input('Фамилия того кого ищем?\n'))
-        organization = str(input('Название ораганизации?\n'))
+        add_search = Guide(
+            # Запрашиваем данные для записи в json
+            name=input('Фамилия того кого ищем:\n'),
+            organization=str(input('Введите название организации:\n')))
+
         with open('data.json', 'r') as json_file:
             data = json.load(json_file)
             for f in data['personal']:
                 # Если Имя или Название оранизации подходит под поиск то выдает ответ
-                if name in f['ФИО'] or organization in f['Название ораганизации']:
+                if add_search.name in f['ФИО'] or add_search.organization in f['Название ораганизации']:
                     print('ФИО:', f['ФИО'])
                     print('Название ораганизации:', f['Название ораганизации'])
                     print('Рабочий телефон:', f['Рабочий телефон'])
                     print('Личный номер телефона:', f['Личный номер телефона'])
 
-    @classmethod
-    def records(cls):
+    @staticmethod
+    def records():
         quantity = int(input('Сколько записей показать\n'))
         with open('data.json', 'r') as json_file:
             data = json.load(json_file)
